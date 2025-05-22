@@ -1,0 +1,88 @@
+﻿@page "/clases/nueva"
+@page "/clases/editar/{Id:int}"
+@rendermode InteractiveServer
+@inject NavigationManager _navigationManager
+@inject IRepositorioClases _repositorioClases
+@inject IRepositorioAlumnas _repositorioAlumnas
+
+<PageTitle>Clases</PageTitle>
+
+<h3>@_mensaje Clase</h3>
+
+<EditForm Model="_clase" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="_clase.Nombre_Clase" />
+            <ValidationMessage For="@(() => _clase.Nombre_Clase)" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">Día de la semana</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="_clase.Dia_Semana" />
+            <ValidationMessage For="@(() => _clase.Dia_Semana)" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">Horario</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="_clase.Horario" placeholder="Ej. 17:00-18:30" />
+            <ValidationMessage For="@(() => _clase.Horario)" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label">Alumna</label>
+        <div class="col-sm-10">
+            <InputSelect class="form-control" @bind-Value="_clase.Num_Cuenta">
+                <option value="">-- Selecciona una alumna --</option>
+                @foreach (var alumna in _alumnas)
+                {
+                    <option value="@alumna.Num_Cuenta">@alumna.Nombre (@alumna.Num_Cuenta)</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => _clase.Num_Cuenta)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a class="btn btn-danger" href="/clases">Cancelar</a>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Clase _clase = new();
+    private string _mensaje = "Nueva";
+    private List<Alumna> _alumnas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _alumnas = await _repositorioAlumnas.GetAll();
+
+        if (Id > 0)
+        {
+            _clase = await _repositorioClases.Get(Id);
+            _mensaje = "Editar";
+        }
+    }
+
+    private async Task Guardar()
+    {
+        if (Id > 0)
+            await _repositorioClases.Update(_clase);
+        else
+            await _repositorioClases.Add(_clase);
+
+        _navigationManager.NavigateTo("/clases");
+    }
+}

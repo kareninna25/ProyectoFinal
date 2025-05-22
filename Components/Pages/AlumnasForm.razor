@@ -1,0 +1,84 @@
+﻿﻿
+@page "/alumnas/nueva"
+@page "/alumnas/editar/{Id:int}"
+
+@rendermode InteractiveServer
+@inject NavigationManager _navigationManager
+@inject IRepositorioAlumnas _repositorioAlumnas
+<PageTitle>Alumnas</PageTitle>
+<h3>@_mensaje Alumna</h3>
+
+<EditForm Model="_alumna" FormName="frmAlumna" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtCuenta" class="col-sm-2 col-form-label">Numero de cuenta</label>
+        <div class="col-sm-10">
+            <InputNumber class="form-control" id="txtCuenta" @bind-Value="_alumna.Num_Cuenta" />
+            <ValidationMessage For="@(() => _alumna.Num_Cuenta)" />
+        </div>
+    </div> 
+
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtNombre" @bind-Value="_alumna.Nombre" />
+            <ValidationMessage For="@(() => _alumna.Nombre)" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtFecha" class="col-sm-2 col-form-label">Fecha de Nacimiento</label>
+        <div class="col-sm-10">
+            <InputDate class="form-control" id="txtFecha" @bind-Value="_alumna.Fecha_Nacimiento" />
+            <ValidationMessage For="@(() => _alumna.Fecha_Nacimiento)" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtContacto" class="col-sm-2 col-form-label">Contacto de Padres</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtContacto" @bind-Value="_alumna.Contacto_Padres" />
+            <ValidationMessage For="@(() => _alumna.Contacto_Padres)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a class="btn btn-danger" href="/personas">Cancelar</a>
+        </div>
+    </div>
+</EditForm>
+
+    @code {
+        [Parameter]
+        public int Id { get; set; }
+
+        private Alumna _alumna = new();
+        private string _mensaje = "Nueva ";
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (Id > 0)
+            {
+                _alumna = await _repositorioAlumnas.Get(Id);
+                _mensaje = "Modificar ";
+            }
+        }
+
+        private async Task Guardar()
+        {
+            if (Id > 0)
+            {
+                await _repositorioAlumnas.Update(_alumna);
+            }
+            else
+            {
+                await _repositorioAlumnas.Add(_alumna);
+            }
+
+            _navigationManager.NavigateTo("/alumnas");
+        }
+    }
+
+

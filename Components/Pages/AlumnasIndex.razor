@@ -1,0 +1,64 @@
+﻿@page "/alumnas"
+@rendermode InteractiveServer
+@inject NavigationManager _navigationManager
+@inject IRepositorioAlumnas _repositorioAlumnas
+
+<PageTitle>Alumnas</PageTitle>
+
+<h3>Alumnas</h3>
+
+<a class="btn btn-primary" href="/alumnas/nueva">Nueva alumna</a>
+
+@if (_alumnas.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Numero de cuenta</th>
+                <th>Nombre</th>
+                <th>Fecha de nacimiento</th>
+                <th>Contacto padres</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var alumna in _alumnas)
+            {
+                <tr>
+					<td>@alumna.Num_Cuenta</td>
+                    <td>@alumna.Nombre</td>
+                    <td>@alumna.Fecha_Nacimiento.ToString()</td>
+                    <td>@alumna.Contacto_Padres</td>
+                    <td>
+                        <button class="btn btn-outline-primary" @onclick="@(() => Editar(alumna))">Editar</button>
+                        <button class="btn btn-outline-danger" @onclick="@(() => Eliminar(alumna))">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay alumnas registradas.</p>
+}
+
+@code {
+    private List<Alumna> _alumnas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _alumnas = await _repositorioAlumnas.GetAll();
+    }
+
+    private void Editar(Alumna alumna)
+    {
+        _navigationManager.NavigateTo($"/alumnas/editar/{alumna.Id}");
+    }
+
+    private async Task Eliminar(Alumna alumna)
+    {
+        await _repositorioAlumnas.Delete(alumna.Id);
+        _alumnas = await _repositorioAlumnas.GetAll(); 
+    }
+}

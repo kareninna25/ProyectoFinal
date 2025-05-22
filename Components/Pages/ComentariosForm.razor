@@ -1,0 +1,72 @@
+﻿@page "/comentarios/nuevo"
+@page "/comentarios/editar/{Id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioComentarios _repositorioComentarios
+@inject IRepositorioAlumnas _repositorioAlumnas
+
+<h3>@_titulo Comentario</h3>
+
+<EditForm Model="_comentario" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label>Alumna</label>
+        <InputSelect class="form-control" @bind-Value="_comentario.ID_Alumna">
+            <option value="">-- Selecciona una alumna --</option>
+            @foreach (var alumna in _alumnas)
+            {
+                <option value="@alumna.Id">@alumna.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label>Fecha</label>
+        <InputDate class="form-control" @bind-Value="_comentario.Fecha_Comentario" />
+    </div>
+
+    <div class="mb-3">
+        <label>Posible mejora</label>
+        <InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Mejora" />
+    </div>
+
+    <div class="mb-3">
+        <label>Comentario positivo</label>
+        <InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Positivo" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Guardar</button>
+    <a class="btn btn-danger" href="/comentarios">Cancelar</a>
+</EditForm>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Comentario _comentario = new();
+    private List<Alumna> _alumnas = new();
+    private string _titulo = "Nuevo";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _alumnas = await _repositorioAlumnas.GetAll();
+
+        if (Id > 0)
+        {
+            _comentario = await _repositorioComentarios.Get(Id);
+            _titulo = "Editar";
+        }
+    }
+
+    private async Task Guardar()
+    {
+        if (Id > 0)
+        {
+            await _repositorioComentarios.Update(_comentario);
+        }
+        else
+        {
+            await _repositorioComentarios.Add(_comentario);
+        }
+
+        _navigationManager.NavigateTo("/comentarios");
+    }
+}

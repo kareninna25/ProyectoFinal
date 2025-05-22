@@ -1,0 +1,64 @@
+﻿@page "/clases"
+@rendermode InteractiveServer
+@inject NavigationManager _navigationManager
+@inject IRepositorioClases _repositorioClases
+
+<PageTitle>Clases</PageTitle>
+
+<h3>Clases</h3>
+
+<a class="btn btn-primary" href="/clases/nueva">Nueva clase</a>
+
+@if (_clases.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre de clase</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Número de cuenta (Alumna)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var clase in _clases)
+            {
+                <tr>
+                    <td>@clase.Nombre_Clase</td>
+                    <td>@clase.Dia_Semana</td>
+                    <td>@clase.Horario</td>
+                    <td>@clase.Num_Cuenta</td>
+                    <td>
+                        <button class="btn btn-outline-primary" @onclick="@(() => Editar(clase))">Editar</button>
+                        <button class="btn btn-outline-danger" @onclick="@(() => Eliminar(clase))">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay clases registradas.</p>
+}
+
+@code {
+    private List<Clase> _clases = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _clases = await _repositorioClases.GetAll();
+    }
+
+    private void Editar(Clase clase)
+    {
+        _navigationManager.NavigateTo($"/clases/editar/{clase.Id}");
+    }
+
+    private async Task Eliminar(Clase clase)
+    {
+        await _repositorioClases.Delete(clase.Id);
+        _clases = await _repositorioClases.GetAll();
+    }
+}

@@ -1,0 +1,61 @@
+﻿@page "/comentarios"
+@inject IRepositorioComentarios _repositorioComentarios
+@inject NavigationManager _navigationManager
+
+<h3>Comentarios</h3>
+
+<a class="btn btn-primary" href="/comentarios/nuevo">Nuevo comentario</a>
+
+@if (_comentarios.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Alumna</th>
+                <th>Fecha</th>
+                <th>Posible mejora</th>
+                <th>Comentario positivo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comentario in _comentarios)
+            {
+                <tr>
+                    <td>@comentario.Alumna.Nombre</td>
+                    <td>@comentario.Fecha_Comentario.ToShortDateString()</td>
+                    <td>@comentario.Comentario_Mejora</td>
+                    <td>@comentario.Comentario_Positivo</td>
+                    <td>
+                        <button class="btn btn-outline-primary" @onclick="@(() => Editar(comentario.Id))">Editar</button>
+                        <button class="btn btn-outline-danger" @onclick="@(() => Eliminar(comentario.Id))">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay comentarios registrados.</p>
+}
+
+@code {
+    private List<Comentario> _comentarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _comentarios = await _repositorioComentarios.GetAll();
+    }
+
+    private void Editar(int id)
+    {
+        _navigationManager.NavigateTo($"/comentarios/editar/{id}");
+    }
+
+    private async Task Eliminar(int id)
+    {
+        await _repositorioComentarios.Delete(id);
+        _comentarios = await _repositorioComentarios.GetAll();
+    }
+}
