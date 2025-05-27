@@ -12,8 +12,8 @@ using Proyecto.Data;
 namespace Proyecto.Migrations
 {
     [DbContext(typeof(BDDirectorioDBContext))]
-    [Migration("20250520163747_BDDirectorioDBContex")]
-    partial class BDDirectorioDBContex
+    [Migration("20250527163549_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,8 +35,7 @@ namespace Proyecto.Migrations
 
                     b.Property<string>("Contacto_Padres")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Fecha_Nacimiento")
                         .HasColumnType("datetime2");
@@ -91,6 +90,9 @@ namespace Proyecto.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AlumnaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Comentario_Mejora")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -104,12 +106,9 @@ namespace Proyecto.Migrations
                     b.Property<DateTime>("Fecha_Comentario")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ID_Alumna")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ID_Alumna");
+                    b.HasIndex("AlumnaId");
 
                     b.ToTable("Comentarios");
                 });
@@ -118,7 +117,7 @@ namespace Proyecto.Migrations
                 {
                     b.HasOne("Proyecto.Data.Alumna", "Alumna")
                         .WithMany()
-                        .HasForeignKey("ID_Alumna")
+                        .HasForeignKey("AlumnaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

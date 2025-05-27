@@ -14,7 +14,7 @@ namespace Proyecto.Repositorio
 
         public async Task<List<Comentario>> GetAll()
         {
-            return await _context.Comentarios.Include(c => c.Alumna).ToListAsync();
+            return await _context.Comentarios.AsNoTracking().Include(c => c.Alumna).ToListAsync();
         }
 
         public async Task<Comentario> Get(int id)

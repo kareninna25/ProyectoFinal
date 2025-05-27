@@ -8,9 +8,8 @@ namespace Proyecto.Data
         public int Id { get; set; }
 
         [Required(ErrorMessage = "El ID de la alumna es obligatorio.")]
-        public int ID_Alumna { get; set; } 
+        public int AlumnaId { get; set; } 
 
-        [ForeignKey("ID_Alumna")]
         public Alumna? Alumna { get; set; } 
 
         [Required(ErrorMessage = "La fecha del comentario es obligatoria.")]

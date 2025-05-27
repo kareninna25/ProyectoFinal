@@ -1,72 +1,78 @@
 ﻿@page "/comentarios/nuevo"
 @page "/comentarios/editar/{Id:int}"
+@rendermode InteractiveServer
 @inject NavigationManager _navigationManager
 @inject IRepositorioComentarios _repositorioComentarios
 @inject IRepositorioAlumnas _repositorioAlumnas
 
 <h3>@_titulo Comentario</h3>
 
-<EditForm Model="_comentario" OnValidSubmit="Guardar">
-    <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label>Alumna</label>
-        <InputSelect class="form-control" @bind-Value="_comentario.ID_Alumna">
-            <option value="">-- Selecciona una alumna --</option>
-            @foreach (var alumna in _alumnas)
-            {
-                <option value="@alumna.Id">@alumna.Nombre</option>
-            }
-        </InputSelect>
-    </div>
+<EditForm Model="_comentario" FormName="ComentarioNuevo" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+	<div class="mb-3">
+		<label>Alumna</label>
+		<InputSelect class="form-control" @bind-Value="_comentario.AlumnaId">
+			<option value="">-- Selecciona una alumna --</option>
+			@foreach (var alumna in _alumnas)
+			{
+				<option value="@alumna.Id">@alumna.Nombre</option>
+			}
+		</InputSelect>
+		<ValidationMessage For="@(() => _comentario.AlumnaId)" />
+	</div>
 
-    <div class="mb-3">
-        <label>Fecha</label>
-        <InputDate class="form-control" @bind-Value="_comentario.Fecha_Comentario" />
-    </div>
+	<div class="mb-3">
+		<label>Fecha</label>
+		<InputDate class="form-control" @bind-Value="_comentario.Fecha_Comentario" />
+		<ValidationMessage For="@(() => _comentario.Fecha_Comentario)" />
 
-    <div class="mb-3">
-        <label>Posible mejora</label>
-        <InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Mejora" />
-    </div>
+	</div>
 
-    <div class="mb-3">
-        <label>Comentario positivo</label>
-        <InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Positivo" />
-    </div>
+	<div class="mb-3">
+		<label>Posible mejora</label>
+		<InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Mejora" />
+		<ValidationMessage For="@(() => _comentario.Comentario_Mejora)" />
+	</div>
 
-    <button class="btn btn-success" type="submit">Guardar</button>
-    <a class="btn btn-danger" href="/comentarios">Cancelar</a>
+	<div class="mb-3">
+		<label>Comentario positivo</label>
+		<InputTextArea class="form-control" @bind-Value="_comentario.Comentario_Positivo" />
+		<ValidationMessage For="@(() => _comentario.Comentario_Positivo)" />
+	</div>
+
+	<button class="btn btn-success" type="submit">Guardar</button>
+	<a class="btn btn-danger" href="/comentarios">Cancelar</a>
 </EditForm>
 
 @code {
-    [Parameter] public int Id { get; set; }
+	[Parameter] public int Id { get; set; }
 
-    private Comentario _comentario = new();
-    private List<Alumna> _alumnas = new();
-    private string _titulo = "Nuevo";
+	private Comentario _comentario = new() { Fecha_Comentario = DateTime.Now };
+	private List<Alumna> _alumnas = new();
+	private string _titulo = "Nuevo";
 
-    protected override async Task OnInitializedAsync()
-    {
-        _alumnas = await _repositorioAlumnas.GetAll();
+	protected override async Task OnInitializedAsync()
+	{
+		_alumnas = await _repositorioAlumnas.GetAll();
 
-        if (Id > 0)
-        {
-            _comentario = await _repositorioComentarios.Get(Id);
-            _titulo = "Editar";
-        }
-    }
+		if (Id > 0)
+		{
+			_comentario = await _repositorioComentarios.Get(Id);
+			_titulo = "Editar";
+		}
+	}
 
-    private async Task Guardar()
-    {
-        if (Id > 0)
-        {
-            await _repositorioComentarios.Update(_comentario);
-        }
-        else
-        {
-            await _repositorioComentarios.Add(_comentario);
-        }
+	private async Task Guardar()
+	{
+		if (Id > 0)
+		{
+			await _repositorioComentarios.Update(_comentario);
+		}
+		else
+		{
+			await _repositorioComentarios.Add(_comentario);
+		}
 
-        _navigationManager.NavigateTo("/comentarios");
-    }
+		_navigationManager.NavigateTo("/comentarios");
+	}
 }

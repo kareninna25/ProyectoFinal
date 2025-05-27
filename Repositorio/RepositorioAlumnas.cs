@@ -12,7 +12,7 @@ namespace Proyecto.Repositorio
         }
         public async Task<List<Alumna>> GetAll()
         {
-            return await _context.Alumnas.ToListAsync();
+            return await _context.Alumnas.AsNoTracking().ToListAsync();
         }
         public async Task<Alumna> Get(int id)
         {

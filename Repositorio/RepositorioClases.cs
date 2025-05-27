@@ -14,7 +14,7 @@ namespace Proyecto.Repositorio
 
         public async Task<List<Clase>> GetAll()
         {
-            return await _context.Clases.ToListAsync();
+            return await _context.Clases.AsNoTracking().ToListAsync();
         }
 
         public async Task<Clase> Get(int id)
